@@ -1,7 +1,6 @@
-library(tidyverse)
-library(lubridate)
-library(mice)
-library(Hmisc)
+source("./Scripts/load_libs_params.R")
+
+dat <- read.csv(paste0("Y:/KOD_Survey/EBS Shelf/", current.year, "/Tech Memo/Data/HAUL_NEWTIMESERIES.csv"))
 
 dat <- read.csv("./data/HAUL_NEWTIMESERIES.csv")
 

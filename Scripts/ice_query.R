@@ -227,6 +227,6 @@
       dplyr::select(year, JanFeb_ice, MarApr_ice)
     
     # save ERA5
-    write.csv(ice.means2, "./Data/ice1953.2024.csv", row.names = F)
+    write.csv(ice.means2, "./Output/ice1953.2024.csv", row.names = F)
     
    
