@@ -2,12 +2,10 @@ source("./Scripts/load_libs_params.R")
 
 dat <- read.csv(paste0("Y:/KOD_Survey/EBS Shelf/", current.year, "/Tech Memo/Data/HAUL_NEWTIMESERIES.csv"))
 
-dat <- read.csv("./data/HAUL_NEWTIMESERIES.csv")
-
 head(dat)
 
 # load immature opilio core habitat
-imm_area <- read.csv("./Data/imm_area_50perc.csv")
+imm_area <- read.csv("./Output/imm_area_50perc.csv")
 
 # plot what we have
 plot.dat <- dat %>%
@@ -119,8 +117,8 @@ diag(pred) <- FALSE # and of course, drop self-correlations - make the diagonal 
 colnames(pred) <- colnames(dat.julian) <- str_remove_all(colnames(pred), "-")
 
 imp <- mice(data = dat.julian, method = "norm.predict", m=100)#, pred = pred) #Using Bayesian linear regression method
-saveRDS(imp, "./output/station_julian_day_imputations.RDS")
-imp <- readRDS("./output/station_julian_day_imputations.RDS")
+saveRDS(imp, "./Output/station_julian_day_imputations.RDS")
+imp <- readRDS("./Output/station_julian_day_imputations.RDS")
 
 str(imp$imp)
 
@@ -149,7 +147,7 @@ for(i in 1:100){
   
   imputed.day <- rbind(imputed.day,
                          data.frame(imputation = i,
-                                    year = c(1975:2019, 2021, 2022),
+                                    year = c(1975:2019, 2021, 2022:2024),
                                     mean.day = rowMeans(temp)))
 }
   
@@ -159,7 +157,7 @@ imputed.day <- imputed.day %>%
 
 # all are identical!
 
-plot.dat <- data.frame(year = c(1975:2019, 2021, 2022),
+plot.dat <- data.frame(year = c(1975:2019, 2021, 2022:2024),
                        imputed.mean.day = rowMeans(imputed.day[,2:101]))
   
 add.dat <- dat %>%
