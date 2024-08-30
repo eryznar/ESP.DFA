@@ -147,7 +147,7 @@ for(i in 1:100){
   
   imputed.day <- rbind(imputed.day,
                          data.frame(imputation = i,
-                                    year = c(1975:2019, 2021, 2022:2024),
+                                    year = c(1975:2019, 2021, 2022:current.year),
                                     mean.day = rowMeans(temp)))
 }
   
@@ -157,7 +157,7 @@ imputed.day <- imputed.day %>%
 
 # all are identical!
 
-plot.dat <- data.frame(year = c(1975:2019, 2021, 2022:2024),
+plot.dat <- data.frame(year = c(1975:2019, 2021, 2022:current.year),
                        imputed.mean.day = rowMeans(imputed.day[,2:101]))
   
 add.dat <- dat %>%
@@ -203,7 +203,7 @@ for(i in 1:100){
   
   imputed.temp <- rbind(imputed.temp,
                        data.frame(imputation = i,
-                                  year = c(1975:2019, 2021, 2022),
+                                  year = c(1975:2019, 2021, 2022:current.year),
                                   mean.temp = rowMeans(temp)))
 }
 
@@ -213,7 +213,7 @@ imputed.temp <- imputed.temp %>%
 
 # all are identical!
 
-plot.dat <- data.frame(year = c(1975:2019, 2021, 2022),
+plot.dat <- data.frame(year = c(1975:2019, 2021, 2022:current.year),
                        imputed.mean.temp = rowMeans(imputed.temp[,2:101]))
 
 add.temp <- dat %>%
@@ -229,7 +229,7 @@ ggplot(plot.dat, aes(year, value, color = name)) +
   geom_point()
 
 
-imputed.dat <- data.frame(year_fac = as.factor(c(1975:2019, 2021, 2022)),
+imputed.dat <- data.frame(year_fac = as.factor(c(1975:2019, 2021, 2022:current.year)),
                           mean.day = rowMeans(imputed.day[,2:101]),
                        mean.temp = rowMeans(imputed.temp[,2:101]))
 
@@ -242,7 +242,7 @@ for(i in 1:100){
   
   # i <- 1
   temp <- complete(imp, action = i) %>%
-    mutate(year = c(1975:2019, 2021, 2022)) %>%
+    mutate(year = c(1975:2019, 2021, 2022:current.year)) %>%
     pivot_longer(cols = -year) 
   
   station.imputed.temp <- rbind(station.imputed.temp,
@@ -266,7 +266,7 @@ for(i in 1:100){
   
   # i <- 1
   temp <- complete(imp, action = i) %>%
-    mutate(year = c(1975:2019, 2021, 2022)) %>%
+    mutate(year = c(1975:2019, 2021, 2022:current.year)) %>%
     pivot_longer(cols = -year) 
   
   station.imputed.day <- rbind(station.imputed.day,
@@ -287,18 +287,18 @@ mod <- mgcv::gamm(bottom.temp ~ year_fac + s(day, k = 5), random = list(station=
 summary(mod$gam)
 plot(mod$gam)
 
-newdat <- data.frame(year_fac = as.factor(c(1975:2019, 2021, 2022)),
+newdat <- data.frame(year_fac = as.factor(c(1975:2019, 2021, 2022:current.year)),
                      day = mean(gam.dat$day))
 
 annual.temp <- predict(mod$gam, newdata = newdat)
 
 
-estimated.temp <- data.frame(year = c(1975:2022),
-                   bottom.temp = c(annual.temp[1:45], NA, annual.temp[46:47]))
+estimated.temp <- data.frame(year = c(1975:current.year),
+                   bottom.temp = c(annual.temp[1:45], NA, annual.temp[46:length(annual.temp)]))
 
 ggplot(estimated.temp, aes(year, bottom.temp)) +
   geom_point() + 
   geom_line()
 
-write.csv(estimated.temp, "./Data/date_corrected_bottom_temp.csv", row.names = F)
+write.csv(estimated.temp, "./Output/date_corrected_bottom_temp.csv", row.names = F)
 
