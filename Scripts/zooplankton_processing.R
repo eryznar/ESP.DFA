@@ -1,8 +1,6 @@
 # create an index of annual Calanus and Pseudocalanus abundance
-# controlling for spatial-temporal differences in sampling among years
 
-library(tidyverse)
-library(mgcv)
+source("./Scripts/load_libs_params.R")
 
 #Last update: 1/13/2023 (modified dataset from D. Kimmel)
 
@@ -10,6 +8,7 @@ theme_set(theme_bw())
 
 # load data
 dat <- read.csv("./Data/Calanus_Pseudo_Combined.csv")
+dat <- read.csv("./Data/Calanus_Pseudo_Combined_2024.csv")
 
 ##############################
 # Data wrangling
@@ -87,10 +86,10 @@ summary(pseudo.mod)
 gam.check(pseudo.mod) #Yikes...going to proceed for now but really need to look
   #at some different model structures 
 
-#Back transform and extract year coefficient (2005 is our intercept)
-c(coef(pseudo.mod)[1], coef(pseudo.mod)[1] + coef(pseudo.mod)[2:16]) -> est
+#Back transform and extract year coefficient (2005 is our intercept) # CHANGE THIS WITH YEAR
+c(coef(pseudo.mod)[1], coef(pseudo.mod)[1] + coef(pseudo.mod)[2:18]) -> est
 
-year <- data.frame(year = c(2005:2019, 2021))
+year <- data.frame(year = c(2005:2019, 2021:(current.year-1)))
 cbind(est,year) -> dat.2
 as_tibble(dat.2) %>%
   rename(Pseudocalanus = est) -> pseudo.dat
@@ -115,9 +114,9 @@ summary(calanus.mod)
 gam.check(calanus.mod) #much better than psuedocalanus model diagnostics 
 
 #Back transform and extract year coefficient (2005 is our intercept)
-c(coef(calanus.mod)[1], coef(calanus.mod)[1] + coef(calanus.mod)[2:16]) -> est.cal
+c(coef(calanus.mod)[1], coef(calanus.mod)[1] + coef(calanus.mod)[2:18]) -> est.cal
 
-year <- data.frame(year = c(2005:2019, 2021))
+year <- data.frame(year = c(2005:2019, 2021:(current.year-1)))
 cbind(est.cal,year) -> dat.3
 as_tibble(dat.3) %>%
   rename(Calanus_glacialis = est.cal) -> cal.dat
@@ -133,5 +132,5 @@ pseudo.dat %>%
   pivot_longer(c(1,3), names_to = "taxa", values_to = "log_abundance") -> zoo_dat
 
 # and save
-write.csv(zoo_dat, "./Data/summarized_zooplankton.csv", row.names = F)
+write.csv(zoo_dat, "./Output/summarized_zooplankton.csv", row.names = F)
 
