@@ -10,6 +10,7 @@ library(oce)
 library(mice)
 library(Hmisc)
 library(ggmap)
+library(mgcv)
 
 
 # LOAD UNIVERSAL PARAMS ------
