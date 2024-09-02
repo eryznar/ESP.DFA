@@ -41,14 +41,64 @@ theme_set(theme_bw())
 
 ## Groundfish specimen data ----
 gf_catch <- read.csv("./Data/groundfish_timeseries.csv")
+gf_catch2 <- read.csv("./Data/gf_cpue_timeseries_2024.csv")
 
 #Core immature snow crab stations
-imm_area <- read.csv("./Data/imm_area_50perc.csv")
+imm_area <- read.csv("./Output/imm_area_50perc.csv")
 
 imm_stations <- pull(imm_area, GIS_STATION)
 
 ##################
-#Biomass of pacific cod within imm snow crab 50th percentile home range 
+#Biomass of pacific cod within imm snow crab 50th percentile home range (USING NEW GF DOWNLOAD)
+
+# separate cod data
+gf_catch2 %>%
+  filter(SPECIES_CODE %in% c(21720),
+         STATION %in% imm_stations) -> cod
+
+
+#Time series of mean cod CPUE within immature core region
+cod %>%
+  filter(YEAR >= 1988) %>% # limit to years with at least 174 stations
+  group_by(YEAR) %>%
+  reframe(mean_cod_CPUE = mean(log(CPUE_KGKM2+1))) -> mean_cod_cpue
+
+ggplot(mean_cod_cpue, aes(YEAR, mean_cod_CPUE)) +
+  geom_line() +
+  geom_point()+
+  ggtitle("1988-2024 cod biomass (log(CPUE_KGKM2+1))")
+
+
+
+
+# COD BIOMASS OLD DATA ----
+# separate cod data
+gf_catch %>%
+  filter(SID %in% c(21720),
+         STATION %in% imm_stations) -> cod
+
+#Time series of mean cod CPUE within immature core region
+cod %>%
+  filter(YEAR >= 1988) %>% # limit to years with at least 174 stations
+  group_by(YEAR) %>%
+  reframe(mean_cod_CPUE = mean(log(WTCPUE+1))) -> mean_cod_cpue
+
+ggplot(mean_cod_cpue, aes(YEAR, mean_cod_CPUE)) +
+  geom_line() +
+  geom_point()+
+  ggtitle("1988-2022 cod biomass (log(WTCPUE+1))")
+
+
+
+
+
+
+
+
+
+
+##################
+#Biomass of pacific cod within imm snow crab 50th percentile home range (USING GF DATA IN BOREAL OPIE)
 
 #Num of stations with catch data each yr within 187 station core region
 gf_catch %>%
@@ -63,7 +113,23 @@ gf_catch %>%
   filter(SID %in% c(21720),
          STATION %in% imm_stations) -> check
 
-sum(check$WTCPUE == 0)
+check %>%
+  group_by(YEAR) %>%
+  reframe(avg.cpue = mean(WTCPUE)) -> check1
+
+  plot(check1, type = "l")
+  
+gf_catch2 %>%
+    filter(SPECIES_CODE %in% c(21720),
+           STATION %in% imm_stations) -> check
+  
+  check %>%
+    group_by(YEAR) %>%
+    reframe(avg.cpue = mean(CPUE_KGKM2)) -> check2
+  
+  lines(check2)
+
+  sum(check$CPUE_KGKM2 == 0)
 
 ## make sure zero-catch stations are included
 
@@ -106,18 +172,16 @@ cod$WTCPUE[change] <- 0
 #Time series of mean cod CPUE within immature core region
 cod %>%
   group_by(YEAR) %>%
-  summarise(mean_cod_CPUE = mean(log(WTCPUE+1))) -> mean_cod_cpue
+  reframe(mean_cod_CPUE = mean(log(WTCPUE+1))) -> mean_cod_cpue
 
-# limit to years with at least 180 stations
-annual_cod_n <- annual_cod_n %>%
-  filter(station >= 180)
-
+# limit to years with at least 174 stations
 mean_cod_cpue <- mean_cod_cpue %>%
-  filter(YEAR %in% annual_cod_n$YEAR)
+  filter(YEAR >=1988) 
 
 ggplot(mean_cod_cpue, aes(YEAR, mean_cod_CPUE)) +
   geom_line() +
   geom_point()
+
 
 
 
