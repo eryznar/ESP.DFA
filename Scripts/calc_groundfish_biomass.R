@@ -10,8 +10,7 @@ source("./Scripts/load_libs_params.R")
 
   ## Groundfish specimen data
   gf_catch <- read.csv("./Data/gf_cpue_timeseries_2024.csv")
-  gf_catch2 <- read.csv("./Data/groundfish_timeseries.csv")
-  
+
   #Core immature snow crab stations
   imm_area <- read.csv("./Output/imm_area_50perc.csv")
   
@@ -33,37 +32,6 @@ source("./Scripts/load_libs_params.R")
     geom_line() +
     geom_point()+
     ggtitle("1988-2024 cod biomass (log(CPUE_KGKM2+1))")
-  
-  # Old data
-  # separate cod data
-  gf_catch2 %>%
-    filter(SID %in% c(21720),
-           STATION %in% imm_stations) -> cod
-  
-  stratum <- sc_strata %>%
-    select(STATION_ID, SURVEY_YEAR) %>% 
-    rename(STATION = STATION_ID,
-           YEAR = SURVEY_YEAR) %>%
-    filter(YEAR >= 1988,
-           STATION %in% imm_stations)
-  
-  cod <- left_join(stratum, cod) 
-  
-  # replace NA catch with 0
-  change <- is.na(cod$WTCPUE)
-  cod$WTCPUE[change] <- 0
-  
-  cod %>%
-    filter(YEAR >= 1988) %>% # limit to years with at least 174 stations
-    group_by(YEAR) %>%
-    mutate(WTCPUE = WTCPUE *100) %>% # change to kg km-2
-    reframe(mean_cod_CPUE = mean(log(WTCPUE+1))) -> mean_cod_cpue
-  
-  ggplot(mean_cod_cpue, aes(YEAR, mean_cod_CPUE)) +
-    geom_line() +
-    geom_point()+
-    ggtitle("1988-2022 cod biomass (log(WTCPUE+1))")
-  
 
 # Arctic complex -----
   gf_catch %>%
@@ -80,5 +48,12 @@ source("./Scripts/load_libs_params.R")
     geom_line() +
     geom_point() +
     ggtitle("1988-2024 arctic biomass (log(CPUE_KGKM2+1))")
+
+# JOIN DATASETS and SAVE
+mean_cod_cpue %>%
+    left_join(mean_arctic_cpue) -> final
+
+write.csv(final, "./Output/groundfish_mean_cpue.csv")
+
   
   
