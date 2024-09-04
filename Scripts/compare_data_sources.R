@@ -68,3 +68,18 @@ ggplot(rbind(old.gf, new.gf), aes(YEAR, mean_cod_CPUE, color = type))+ # won't m
 ggplot(rbind(old.gf, new.gf), aes(YEAR, mean_arctic_CPUE, color = type))+ # won't match bc diff core area and units
   geom_line()+
   geom_point()
+
+# Zooplankton ----
+old.zoop <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opie/Data/summarized_zooplankton.csv") %>%
+            mutate(type = "old")
+
+new.zoop <- read.csv("./Output/summarized_zooplankton.csv") %>%
+  mutate(type = "new") 
+
+ggplot(rbind(old.zoop, new.zoop) %>% filter(taxa == "Pseudocalanus"), aes(year, log_abundance, color = type))+ 
+  geom_line()+
+  geom_point()
+
+ggplot(rbind(old.zoop, new.zoop) %>% filter(taxa == "Calanus_glacialis"), aes(year, log_abundance, color = type))+ 
+  geom_line()+
+  geom_point()
