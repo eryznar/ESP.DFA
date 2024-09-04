@@ -1,22 +1,6 @@
   # produce ice cover time series for Bering (55-64N, 180-160W)
   
-  library(tidyverse)
-  library(ncdf4)
-  library(zoo)
-  library(maps)
-  library(mapdata)
-  library(chron)
-  library(fields)
-  library(oce)
-  
-  # set palettes
-  new.col <- oceColorsPalette(64)
-  cb <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-  
-  # set theme
-  theme_set(theme_bw())
-  
-  
+
   ## load and process ------------------------
   
   # note that there are separate time series for 1950-1978 and 1979-present
@@ -227,6 +211,7 @@
       dplyr::select(year, JanFeb_ice, MarApr_ice)
     
     # save ERA5
-    write.csv(ice.means2, "./Output/ice1953.2024.csv", row.names = F)
+    write.csv(ice.means2, "./Output/ice.csv", row.names = F)
+    
     
    
