@@ -7,8 +7,8 @@ source("./Scripts/load_libs_params.R")
 theme_set(theme_bw())
 
 # load data
-dat <- read.csv("./Data/Calanus_Pseudo_Combined.csv")
-dat <- read.csv("./Data/Calanus_Pseudo_Combined_2024.csv")
+dat <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opie/Data/Calanus_Pseudo_Combined.csv")
+dat2 <- read.csv("./Data/Calanus_Pseudo_Combined_2024.csv")
 
 ##############################
 # Data wrangling
@@ -20,6 +20,14 @@ dat <- dat %>%
          rename(log_abundance = log10_EST_NUM_PERM3) %>%
           rename_with(tolower)
 
+dat2 <- dat2 %>%
+  mutate(julian = 
+           lubridate::yday(lubridate::parse_date_time(paste(DAY, MONTH, YEAR, sep = "-"), order = "dmy")),
+         year_fac = as.factor(YEAR)) %>%
+  mutate(abundance = exp(log10_EST_NUM_PERM3)) %>%
+  rename(log_abundance = log10_EST_NUM_PERM3) %>%
+  rename_with(tolower)
+
 #Mean date sampled 
 dat %>%
   group_by(year) %>%
@@ -28,6 +36,17 @@ dat %>%
             max_date = max(julian, na.rm=T))
 #plot date sampled 
 dat %>%
+  ggplot(aes(julian)) +
+  geom_histogram(bins = 12, fill = "dark grey", color = "black") +
+  facet_wrap(~year)  
+
+dat2 %>%
+  group_by(year) %>%
+  summarise(mean_date = mean(julian, na.rm=T),
+            min_date = min(julian, na.rm=T),
+            max_date = max(julian, na.rm=T))
+#plot date sampled 
+dat2 %>%
   ggplot(aes(julian)) +
   geom_histogram(bins = 12, fill = "dark grey", color = "black") +
   facet_wrap(~year)  
@@ -49,6 +68,14 @@ dat %>%
   geom_point() +
   geom_line() 
 
+#plot # stations sampled
+dat2 %>%
+  group_by(year) %>%
+  summarise(num_stations = n_distinct(station_name, na.rm=T)) %>%
+  ggplot(aes(x=year, y=num_stations, group=1)) +
+  geom_point() +
+  geom_line() 
+
 #plot psuedocalanus mean abundance: full timeseries
 dat %>%
   filter(taxa == "Pseudocalanus spp.") %>%
@@ -57,6 +84,35 @@ dat %>%
   ggplot(aes(x=year, y=mean_pseudo)) +
   geom_point() +
   geom_line()
+
+dat2 %>%
+  filter(taxa == "Pseudocalanus spp.") %>%
+  group_by(year) %>%
+  summarise(mean_pseudo = mean(log_abundance, na.rm=T))%>%
+  ggplot(aes(x=year, y=mean_pseudo)) +
+  geom_point() +
+  geom_line()
+
+
+ggplot(rbind(dat %>% mutate(type = "old") %>% dplyr::select(year, taxa, log_abundance, type), 
+             dat2 %>% mutate(type = "new") %>% dplyr::select(year, taxa, log_abundance, type)) %>% 
+         filter(taxa == "Pseudocalanus spp.") %>%
+         group_by(year, type) %>%
+         reframe(mean_log_abundance = mean(log_abundance, na.rm=T)),
+       aes(x = year, y = mean_log_abundance, color = type))+
+  geom_point()+
+  geom_line() +
+  ggtitle("Pseudocalanus spp.")
+
+ggplot(rbind(dat %>% mutate(type = "old") %>% dplyr::select(year, taxa, log_abundance, type), 
+             dat2 %>% mutate(type = "new") %>% dplyr::select(year, taxa, log_abundance, type)) %>% 
+         filter(taxa == "Calanus glacialis") %>%
+         group_by(year, type) %>%
+         reframe(mean_log_abundance = mean(log_abundance, na.rm=T)),
+       aes(x = year, y = mean_log_abundance, color = type))+
+  geom_point()+
+  geom_line() +
+  ggtitle("Calanus glacialis")
 
 #plot calanus mean abundance: full timeseries 
 dat %>%
