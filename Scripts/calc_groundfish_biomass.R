@@ -51,7 +51,11 @@ source("./Scripts/load_libs_params.R")
 
 # JOIN DATASETS and SAVE
 mean_cod_cpue %>%
-    left_join(mean_arctic_cpue) -> final
+    left_join(mean_arctic_cpue) %>%
+  rename(year = YEAR,
+         `Pacific cod` = mean_cod_CPUE,
+         `Arctic groundfish` = mean_arctic_CPUE) %>%
+  pivot_longer(cols = -year) -> final
 
 write.csv(final, "./Output/groundfish_mean_cpue.csv")
 
