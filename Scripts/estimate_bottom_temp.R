@@ -294,9 +294,11 @@ annual.temp <- predict(mod$gam, newdata = newdat)
 
 
 estimated.temp <- data.frame(year = c(1975:current.year),
-                   bottom.temp = c(annual.temp[1:45], NA, annual.temp[46:length(annual.temp)]))
+                   bottom.temp = c(annual.temp[1:45], NA, annual.temp[46:length(annual.temp)])) %>%
+                   rename(value = bottom.temp) %>%
+                  mutate(name = "Bottom temperature")
 
-ggplot(estimated.temp, aes(year, bottom.temp)) +
+ggplot(estimated.temp, aes(year, value)) +
   geom_point() + 
   geom_line()
 
