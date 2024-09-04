@@ -208,7 +208,12 @@
     
     # clean up
     ice.means2 <- ice.means %>%
-      dplyr::select(year, JanFeb_ice, MarApr_ice)
+      dplyr::select(year, JanFeb_ice, MarApr_ice) %>%
+      rename(`Jan-Feb ice cover` = JanFeb_ice,
+             `Mar-Apr ice cover` = MarApr_ice) %>%
+      filter(year >= 1972) %>%
+      pivot_longer(cols = -year)
+      
     
     # save ERA5
     write.csv(ice.means2, "./Output/ice.csv", row.names = F)
