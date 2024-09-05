@@ -1,5 +1,5 @@
 # Bottom temp ----
-old.bt <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opie/Data/date_corrected_bottom_temp.csv") %>%
+old.bt <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opieNEW/Data/date_corrected_bottom_temp.csv") %>%
           mutate(type = "old")
 
 new.bt <- read.csv("./Output/date_corrected_bottom_temp.csv") %>%
@@ -11,7 +11,7 @@ ggplot(rbind(old.bt, new.bt), aes(year, bottom.temp, color = type))+
 
 
 # Ice ----
-old.ice <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opie/Data/ice.csv") %>%
+old.ice <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opieNEW/Data/ice.csv") %>%
   mutate(type = "old")
 
 new.ice <- read.csv("./Output/ice.csv") %>%
@@ -26,7 +26,7 @@ ggplot(rbind(old.ice, new.ice), aes(year, MarApr_ice, color = type))+
   geom_point()
 
 # Bloom type and timing ----
-old.bloomtime <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opie/Data/bloom_timing.csv") %>%
+old.bloomtime <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opieNEW/Data/bloom_timing.csv") %>%
   filter(north_south == "south") %>%
   rename(value = globcolour_peak_mean) %>%
   mutate(name = "Bloom timing") %>%
@@ -37,7 +37,11 @@ new.bloomtime <- read.csv("./Output/bloom_timing.csv") %>%
   mutate(type = "new") %>%
   dplyr::select(!X)
 
-old.bloomtype <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opie/Data/bloom_type.csv") %>%
+ggplot(rbind(old.bloomtime, new.bloomtime), aes(year, value, color = type))+
+  geom_line()+
+  geom_point()
+
+old.bloomtype <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opieNEW/Data/bloom_type.csv") %>%
   filter(north_south == "south") %>%
   mutate(name = case_when(gl_type == "ice_full" ~ "Ice-edge bloom",
                           gl_type == "ice_free" ~ "Open water bloom")) %>%
@@ -55,7 +59,7 @@ ggplot(rbind(old.bloomtype, new.bloomtype), aes(year, value, color = type))+
   geom_point()
 
 # Groundfish biomass ----
-old.gf <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opie/Data/groundfish_mean_cpue.csv") %>%
+old.gf <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opieNEW/Data/groundfish_mean_cpue.csv") %>%
         mutate(type = "old")
 
 new.gf <- read.csv("./Output/groundfish_mean_cpue.csv") %>%
@@ -70,7 +74,7 @@ ggplot(rbind(old.gf, new.gf), aes(YEAR, mean_arctic_CPUE, color = type))+ # won'
   geom_point()
 
 # Zooplankton ----
-old.zoop <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opie/Data/summarized_zooplankton.csv") %>%
+old.zoop <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opieNEW/Data/summarized_zooplankton.csv") %>%
             mutate(type = "old")
 
 new.zoop <- read.csv("./Output/summarized_zooplankton.csv") %>%

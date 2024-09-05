@@ -7,10 +7,11 @@ source("./Scripts/load_libs_params.R")
 theme_set(theme_bw())
 
 # load data
-dat <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opie/Data/Calanus_Pseudo_Combined.csv")
-dat2 <- read.csv("./Data/Calanus_Pseudo_Combined_2024.csv")
+dat <- read.csv("C:/Users/emily.ryznar/Work/Documents/Boreal opie/boreal-opieNEW/Data/Calanus_Pseudo_Combined.csv")
+#dat2 <- read.csv("./Data/Calanus_Pseudo_Combined_2024.csv")
 
 #dat <- read.csv("C:/Users/emily.ryznar/Downloads/Calanus_Pseudo_Combined2.csv") # data DK said he sent Erin
+#dat2 <- read.csv("./Data/Calanus_Pseudo_Combined2.csv") # data from Erin originally shared via google sheets by DK
 dat2 <- read.csv("./Data/Calanus_Pseudo_Combined_2024_V2.csv") # new data DK provided
 
 
@@ -65,9 +66,9 @@ dat %>%
   facet_wrap(~year) #very few stations prior to 2005 
 
 #plot # stations sampled
-dat %>%
+dat2 %>%
   group_by(year) %>%
-  summarise(num_stations = n_distinct(station_name, na.rm=T)) %>%
+  summarise(num_stations = n_distinct(station_name, na.rm=T))%>%
   ggplot(aes(x=year, y=num_stations, group=1)) +
   geom_point() +
   geom_line() 
@@ -102,7 +103,7 @@ ggplot(rbind(dat %>% mutate(type = "old") %>% dplyr::select(year, taxa, log_abun
              dat2 %>% mutate(type = "new") %>% dplyr::select(year, taxa, log_abundance, type)) %>% 
          filter(taxa == "Pseudocalanus spp.") %>%
          group_by(year, type) %>%
-         reframe(mean_log_abundance = mean(log_abundance, na.rm=T)),
+         reframe(mean_log_abundance = sum(log_abundance, na.rm=T)),
        aes(x = year, y = mean_log_abundance, color = type))+
   geom_point()+
   geom_line() +
