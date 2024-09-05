@@ -38,7 +38,6 @@ d5 <- read.csv("./Output/groundfish_mean_cpue.csv", row.names = 1) %>%
 
 #zooplankton abundances
 d6 <- read.csv("./Output/summarized_zooplankton.csv") %>%
-  filter(taxa == "Calanus_glacialis") %>% # just using calanus until pseudo discrepancies are understood
   rename(name = taxa, 
          value = log_abundance)
 
@@ -63,10 +62,10 @@ plot.dat <- left_join(plot.dat, plot.order)
 plot.dat$name <- dplyr::reorder(plot.dat$name, plot.dat$order)
 
 plot.dat$name <- factor(plot.dat$name, levels = c("Jan-Feb ice cover", "Mar-Apr ice cover", "bottom.temp",
-                                                  "Open water bloom", "Bloom timing", "Calanus", "Pacific cod",
+                                                  "Open water bloom", "Bloom timing", "Pseudocalanus", "Calanus", "Pacific cod",
                                                   "Arctic groundfish"), 
                                        labels = c("Jan-Feb ice cover", "Mar-Apr ice cover", "Bottom temperature",
-                                                  "Open water bloom", "Bloom timing", "Calanus", "Pacific cod", 
+                                                  "Open water bloom", "Bloom timing", "Pseudocalanus", "Calanus", "Pacific cod", 
                                                   "Arctic groundfish"))
 
 # save as Extended Data Fig. 4
@@ -223,7 +222,7 @@ ggpubr::ggarrange(loadings.plot,
                   widths = c(0.45, 0.55),
                   labels = "auto")
 
-# only one loading can be distinguished from 0! 
+# only two loadings (?) can be distinguished from 0! 
 # reject this model and fit second-best model (1 trend diagonal and unequal)
 
 model.list = list(A="zero", m=1, R="diagonal and unequal") # third-best model - this is the borealization index

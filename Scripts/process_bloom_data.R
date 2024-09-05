@@ -1,36 +1,3 @@
-# OLD DATA ---
-#bloom timing
-d1 <- read.csv("./Data/bloom_timing.csv")
-
-d1 <- d1 %>%
-  filter(north_south == "south") %>%
-  rename(value = globcolour_peak_mean) %>%
-  mutate(name = "Bloom timing") %>%
-  dplyr::select(year, name, value)
-
-#bloom type  
-d2 <- read.csv("./Data/bloom_type.csv")
-
-check  <- d2 %>%
-  filter(north_south == "south") %>%
-  mutate(name = case_when(gl_type == "ice_full" ~ "Ice-edge bloom",
-                          gl_type == "ice_free" ~ "Open water bloom")) %>%
-  rename(value = count) %>%
-  dplyr::select(year, name, value) %>%
-  group_by(name) %>%
-  summarise(count = n())
-
-check
-
-d2  <- d2 %>%
-  filter(north_south == "south") %>%
-  mutate(name = case_when(gl_type == "ice_full" ~ "Ice-edge bloom",
-                          gl_type == "ice_free" ~ "Open water bloom")) %>%
-  rename(value = count) %>%
-  dplyr::select(year, name, value)%>%
-  filter(name == "Open water bloom")
-
-
 # NEW DATA ---
 #bloom timing
 d3 <- read.csv("./Data/bloom_timing_NS_OPIE_2024.csv")
